@@ -2482,7 +2482,7 @@ function Luna:CreateWindow(WindowSettings)
 	TweenService:Create(Main.Line, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
 	wait(0.4)
 	LoadingFrame.Visible = false
-	_G.ToggleLogo = WindowSettings.LogoID
+	
 	Draggable(Dragger, Main)
 	Draggable(LunaUI.MobileSupport, LunaUI.MobileSupport)
 	if dragBar then Draggable(dragInteract, Main, true, 255) end

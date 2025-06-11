@@ -6978,4 +6978,89 @@ end
     t1:CreateDropdown({Callback = function(t) print(unpack(t)) end})
     t1:CreateDropdown({Description = "Special Type - Player", Callback = "", SpecialType = "Player"})
 end]]--
+local coreGui = game:GetService("CoreGui")
+local clematisGui = nil
+for _, v in pairs(coreGui:GetDescendants()) do
+    if v:IsA("ScreenGui") then
+        if v.Name == "Luna UI" then
+            clematisGui = v
+        end
+    end
+end
+
+if not clematisGui then
+    warn("ไม่พบ GUI ทั้งสองตัว")
+    return
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ToggleShowHide"
+screenGui.IgnoreGuiInset = true
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global 
+screenGui.DisplayOrder = 9999
+screenGui.Parent = coreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 100, 0, 100)
+frame.Position = UDim2.new(0, 20, 1, -120)
+frame.BackgroundTransparency = 1
+frame.BorderSizePixel = 0
+frame.BackgroundColor3 = Color3.fromRGB(153, 102, 204)
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0.2, 0)
+corner.Parent = frame
+
+local button = Instance.new("ImageButton")
+button.Size = UDim2.new(1, 0, 1, 0)
+button.BackgroundTransparency = 1
+button.Image = "rbxassetid://" .. WindowSettings.LogoID
+button.ImageColor3 = Color3.fromRGB(255, 255, 255)
+button.Parent = frame
+
+local isEnabled = true
+button.MouseButton1Click:Connect(function()
+    isEnabled = not isEnabled
+
+    if clematisGui then
+        clematisGui.Enabled = isEnabled
+    end
+
+    local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local goal = {Size = UDim2.new(0, 60, 0, 60)}
+    local tween = game:GetService("TweenService"):Create(button, tweenInfo, goal)
+    tween:Play()
+    tween.Completed:Connect(function()
+        local returnTween = game:GetService("TweenService"):Create(button, tweenInfo, {Size = UDim2.new(0, 50, 0, 50)})
+        returnTween:Play()
+    end)
+end)
+
+local dragging = false
+local dragInput, mousePos, buttonPos
+local userInputService = game:GetService("UserInputService")
+
+button.InputBegan:Connect(function(input, gameProcessedEvent)
+    if gameProcessedEvent then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        mousePos = input.Position
+        buttonPos = button.Position
+    end
+end)
+
+button.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - mousePos
+        button.Position = UDim2.new(buttonPos.X.Scale, buttonPos.X.Offset + delta.X, buttonPos.Y.Scale, buttonPos.Y.Offset + delta.Y)
+    end
+end)
+
+button.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
 return Luna

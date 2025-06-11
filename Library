@@ -2257,7 +2257,7 @@ function Luna:CreateWindow(WindowSettings)
 	}, WindowSettings.KeySettings.SecondAction)
 
 	local Passthrough = false
-
+	_G.ToggleLogo = WindowSettings.LogoID
 	local Window = { Bind = Enum.KeyCode.K, CurrentTab = nil, State = true, Size = false, Settings = nil }
 
 	Main.Title.Title.Text = WindowSettings.Name
@@ -7015,7 +7015,7 @@ corner.Parent = frame
 local button = Instance.new("ImageButton")
 button.Size = UDim2.new(1, 0, 1, 0)
 button.BackgroundTransparency = 1
-button.Image = "http://www.roblox.com/asset/?id=" .. WindowSettings.LogoID
+button.Image = "http://www.roblox.com/asset/?id=" .. _G.ToggleLogo
 button.ImageColor3 = Color3.fromRGB(255, 255, 255)
 button.Parent = frame
 

@@ -2258,10 +2258,10 @@ function Luna:CreateWindow(WindowSettings)
 
 	local Passthrough = false
 	local Window = { Bind = Enum.KeyCode.K, CurrentTab = nil, State = true, Size = false, Settings = nil }
-	_G.ToggleLogo = WindowSettings.LogoID
 	Main.Title.Title.Text = WindowSettings.Name
 	Main.Title.subtitle.Text = WindowSettings.Subtitle
 	Main.Logo.Image = "rbxassetid://" .. WindowSettings.LogoID
+	_G.ToggleLogo = WindowSettings.LogoID
 	Main.Visible = true
 	Main.BackgroundTransparency = 1
 	Main.Size = MainSize
@@ -6977,6 +6977,7 @@ end
     t1:CreateDropdown({Callback = function(t) print(unpack(t)) end})
     t1:CreateDropdown({Description = "Special Type - Player", Callback = "", SpecialType = "Player"})
 end]]--
+
 local coreGui = game:GetService("CoreGui")
 local clematisGui = nil
 for _, v in pairs(coreGui:GetDescendants()) do
@@ -7014,7 +7015,7 @@ corner.Parent = frame
 local button = Instance.new("ImageButton")
 button.Size = UDim2.new(1, 0, 1, 0)
 button.BackgroundTransparency = 1
-button.Image = "http://www.roblox.com/asset/?id=" .. (_G.ToggleLogo or "83415391084673")
+button.Image = "http://www.roblox.com/asset/?id=" .. (tostring(_G.ToggleLogo) or "83415391084673")
 button.ImageColor3 = Color3.fromRGB(255, 255, 255)
 button.Parent = frame
 

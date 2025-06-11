@@ -7002,7 +7002,6 @@ screenGui.Parent = coreGui
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 100, 0, 100)
 frame.Size = UDim2.new(0, 250, 0, 120)
-frame.AnchorPoint = Vector2.new(0, 0)
 frame.Position = UDim2.new(0, 10, 0, 40)
 frame.BackgroundTransparency = 1
 frame.BorderSizePixel = 0

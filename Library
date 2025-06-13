@@ -2276,7 +2276,7 @@ function Luna:CreateWindow(WindowSettings)
 
 	LoadingFrame.Frame.Frame.Title.Text = WindowSettings.LoadingTitle
 	LoadingFrame.Frame.Frame.Subtitle.Text = WindowSettings.LoadingSubtitle
-	LoadingFrame.Version.Text = LoadingFrame.Frame.Frame.Title.Text == "Luna Interface Suite" and Release or "Luna UI"
+	LoadingFrame.Version.Text = LoadingFrame.Frame.Frame.Title.Text == "Luna Interface Suite" and Release or "Clematis | Luna"
 
 	Navigation.Player.icon.ImageLabel.Image = Players:GetUserThumbnailAsync(Players.LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
 	Navigation.Player.Namez.Text = Players.LocalPlayer.DisplayName
@@ -6151,7 +6151,7 @@ function Luna:CreateWindow(WindowSettings)
 
 			Tab:CreateInput({
 				Name = "Config Name",
-				Description = "Insert a name for your to be created config.",
+				Description = "ตั้งชื่อคอนฟิคที่จะบันทึก",
 				PlaceholderText = "Name",
 				CurrentValue = "",
 				Numeric = false,
@@ -6166,7 +6166,7 @@ function Luna:CreateWindow(WindowSettings)
 
 Tab:CreateButton({
 	Name = "Create Config",
-	Description = "Create a config with all of your current settings.",
+	Description = "สร้างคอนฟิค",
 	Callback = function()
 		local success, err = pcall(function()
 			if not inputPath or string.gsub(inputPath, " ", "") == "" then
@@ -6211,7 +6211,7 @@ Tab:CreateButton({
 
 			configSelection = Tab:CreateDropdown({
 				Name = "Select Config",
-				Description = "Select a config to load your settings on.",
+				Description = "เลือกคอนฟิค",
 				Options = Luna:RefreshConfigList(),
 				CurrentOption = {},
 				MultipleOptions = false,
@@ -6230,7 +6230,7 @@ end
 
 Tab:CreateButton({
 	Name = "Load Config",
-	Description = "Load your saved config settings.",
+	Description = "โหลดคอนฟิคที่เลือก",
 	Callback = function()
 	local name = GetSelectedConfigName()
 	if name == "" then 
@@ -6264,7 +6264,7 @@ Tab:CreateButton({
 
 Tab:CreateButton({
 	Name = "Overwrite Config",
-	Description = "Overwrite your current config settings.",
+	Description = "เขียนทับคอนฟิคที่เลือก",
 	Callback = function()
 	local name = GetSelectedConfigName()
 	if name == "" then 
@@ -6298,7 +6298,7 @@ Tab:CreateButton({
 
 Tab:CreateButton({
 	Name = "Refresh Config List",
-	Description = "Refresh the current config list.",
+	Description = "รีเฟรชลิสคอนฟิค",
 	Callback = function()
 	local name = GetSelectedConfigName()
 	if name == "" then 
@@ -6335,7 +6335,7 @@ local loadlabel
 
 Tab:CreateButton({
 	Name = "Set as autoload",
-	Description = "Set a config to auto load setting in your next session.",
+	Description = "ตั้งคอนฟิคที่เลือกเป็นโหลดอัตโนมัติ",
 	Callback = function()
 	local name = GetSelectedConfigName()
 	if name == "" then 
@@ -6361,7 +6361,7 @@ Tab:CreateButton({
 
 			Tab:CreateButton({
 				Name = "Delete Autoload",
-				Description = "Delete The Autoload File",
+				Description = "ลบข้อมูลออโต้โหลดคอนฟิค",
 				Callback = function()
 					local name = selectedConfig
 					delfile(Luna.Folder .. "/settings/autoload.txt")

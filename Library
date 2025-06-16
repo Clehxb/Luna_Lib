@@ -7085,13 +7085,16 @@ isEnabled = not isEnabled
     end
 end)
 
-button.MouseButton1Click:Connect(function()
-    isEnabled = not isEnabled
+function togglegui()
+isEnabled = not isEnabled
 
     if clematisGui then
         clematisGui.Enabled = isEnabled
     end
+end
 
+button.MouseButton1Click:Connect(function()
+	togglegui()
     local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local goal = {Size = UDim2.new(0, 60, 0, 60)}
     local tween = game:GetService("TweenService"):Create(button, tweenInfo, goal)
@@ -7102,9 +7105,25 @@ button.MouseButton1Click:Connect(function()
     end)
 end)
 
+local userInputService = game:GetService("UserInputService")
+userInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.K then
+        togglegui()
+    end
+end)
+
+local StarterGui = game:GetService("StarterGui")
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "🛠️ GUI Toggle",
+        Text = "กดปุ่ม K เพื่อแสดง/ซ่อนเมนู",
+        Duration = 5
+    })
+end)
+
 local dragging = false
 local dragInput, mousePos, buttonPos
-local userInputService = game:GetService("UserInputService")
 
 button.InputBegan:Connect(function(input, gameProcessedEvent)
     if gameProcessedEvent then return end

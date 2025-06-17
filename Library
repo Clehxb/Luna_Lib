@@ -5841,17 +5841,7 @@ function Luna:CreateWindow(WindowSettings)
 						tween(Option, {TextColor3 = Color3.fromRGB(200,200,200), BackgroundTransparency = 0.98})
 					end
 				end
-				if type(bleh) == "table" then
-    				for _, v in ipairs(bleh) do
-        		if Dropdown.List[v] then
-            		tween(Dropdown.List[v], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
-        		end
-    		end
-				elseif type(bleh) == "string" then
-    		if Dropdown.List[bleh] then
-        		tween(Dropdown.List[bleh], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
-    		end
-			end
+				tween(Dropdown.List[bleh], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
 
 				if DropdownSettings.MultipleOptions then
 					if DropdownSettings.CurrentOption and type(DropdownSettings.CurrentOption) == "table" then
@@ -6273,39 +6263,37 @@ Tab:CreateButton({
 })
 
 Tab:CreateButton({
-    Name = "Delete Config",
-    Description = "ลบคอนฟิคที่เลือก",
-    Callback = function()
-        local name = GetSelectedConfigName()
-        if name == "" then 
-            Luna:Notification({
-                Title = "Interface",
-                Icon = "_warning",
-                ImageSource = "Material",
-                Content = "Please select a config first."
-            })
-            return
-        end
+	Name = "Overwrite Config",
+	Description = "เขียนทับคอนฟิคที่เลือก",
+	Callback = function()
+	local name = GetSelectedConfigName()
+	if name == "" then 
+				Luna:Notification({
+				Title = "Interface",
+				Icon = "_warning",
+				ImageSource = "Material",
+				Content = "Please select a config first."
+			})
+	return end
 
-        local file = Luna.Folder .. "/settings/" .. name .. ".luna"
-        if isfile(file) then
-            delfile(file)
-            Luna:Notification({
-                Title = "Interface",
-                Icon = "info",
-                ImageSource = "Material",
-                Content = string.format("Deleted config %q", name),
-            })
-            configSelection:Set({ Options = Luna:RefreshConfigList(), CurrentOption = {} })
-        else
-            Luna:Notification({
-                Title = "Interface",
-                Icon = "_warning",
-                ImageSource = "Material",
-                Content = "Config file not found."
-            })
-        end
-    end
+		local success, returned = Luna:SaveConfig(name)
+		if not success then
+			Luna:Notification({
+				Title = "Interface",
+				Icon = "error",
+				ImageSource = "Material",
+				Content = "Unable to overwrite config, return error: " .. tostring(returned)
+			})
+			return
+		end
+
+		Luna:Notification({
+			Title = "Interface",
+			Icon = "info",
+			ImageSource = "Material",
+			Content = string.format("Overwrote config %q", selectedConfig),
+		})
+	end
 })
 
 Tab:CreateButton({

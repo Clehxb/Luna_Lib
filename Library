@@ -3,6 +3,7 @@
 Luna Interface Suite
 by Nebula Softworks
 
+
 Main Credits
 
 Hunter (Nebula Softworks) | Designing And Programming | Main Developer
@@ -25,7 +26,7 @@ Deity/dp4pv/x64x70 | Certain Scripting and Testing ig
 
 local Release = "Edition 1.1"
 
-local Luna = { Folder = "Luna", Options = {}, ThemeGradient = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(117, 164, 206)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(123, 201, 201)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(224, 138, 175))} }
+local Luna = { Folder = "Luna", Options = {}, ThemeGradient = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(75, 85, 200)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(120, 95, 220)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(165, 105, 240))} }
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -1538,6 +1539,7 @@ local IconModule = {
 local request = (syn and syn.request) or (http and http.request) or http_request or nil
 local tweeninfo = TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
 local PresetGradients = {
+	["Purple-Blue Dream"] = {Color3.fromRGB(75, 85, 200), Color3.fromRGB(120, 95, 220), Color3.fromRGB(165, 105, 240)},
 	["Nightlight (Classic)"] = {Color3.fromRGB(147, 255, 239), Color3.fromRGB(201,211,233), Color3.fromRGB(255, 167, 227)},
 	["Nightlight (Neo)"] = {Color3.fromRGB(117, 164, 206), Color3.fromRGB(123, 201, 201), Color3.fromRGB(224, 138, 175)},
 	Starlight = {Color3.fromRGB(147, 255, 239), Color3.fromRGB(181, 206, 241), Color3.fromRGB(214, 158, 243)},
@@ -1548,6 +1550,8 @@ local PresetGradients = {
 	Cherry = {Color3.fromRGB(148, 54, 54), Color3.fromRGB(168, 67, 70), Color3.fromRGB(188, 80, 86)},
 	Daylight = {Color3.fromRGB(51, 156, 255), Color3.fromRGB(89, 171, 237), Color3.fromRGB(127, 186, 218)},
 	Blossom = {Color3.fromRGB(255, 165, 243), Color3.fromRGB(213, 129, 231), Color3.fromRGB(170, 92, 218)},
+	["Mystic Purple"] = {Color3.fromRGB(85, 70, 200), Color3.fromRGB(130, 90, 230), Color3.fromRGB(175, 110, 255)},
+	["Ocean Deep"] = {Color3.fromRGB(60, 85, 180), Color3.fromRGB(90, 115, 210), Color3.fromRGB(120, 145, 240)},
 }
 
 local function GetIcon(icon, source)
@@ -1927,6 +1931,11 @@ local Tabs = Navigation.Tabs
 local Notifications = LunaUI.Notifications
 local KeySystem : Frame = Main.KeySystem
 
+-- เปลี่ยนสีพื้นหลังของ KeySystem เป็นโทนม่วงเข้ม
+KeySystem.BackgroundColor3 = Color3.fromRGB(55, 35, 95)
+-- เปลี่ยนสีพื้นหลังของ Notifications เป็นโทนม่วงเข้ม
+Notifications.BackgroundColor3 = Color3.fromRGB(55, 35, 95)
+
 -- local function LoadConfiguration(Configuration, autoload)
 -- 	local Data = HttpService:JSONDecode(Configuration)
 -- 	local changed
@@ -2263,6 +2272,8 @@ function Luna:CreateWindow(WindowSettings)
 	Main.Logo.Image = "rbxassetid://" .. WindowSettings.LogoID
 	Main.Visible = true
 	Main.BackgroundTransparency = 1
+	-- เปลี่ยนสีพื้นหลังของ Main Frame เป็นโทนม่วงเข้ม
+	Main.BackgroundColor3 = Color3.fromRGB(55, 35, 95)
 	Main.Size = MainSize
 	Main.Size = UDim2.fromOffset(Main.Size.X.Offset - 70, Main.Size.Y.Offset - 55)
 	Main.Parent.ShadowHolder.Size = Main.Size
@@ -2273,6 +2284,13 @@ function Luna:CreateWindow(WindowSettings)
 
 	tween(Elements.Parent, {BackgroundTransparency = 1})
 	Elements.Parent.Visible = false
+	-- เปลี่ยนสีพื้นหลังของ Elements เป็นโทนม่วงเข้ม
+	Elements.BackgroundColor3 = Color3.fromRGB(23, 15, 51)
+	Elements.Parent.BackgroundColor3 = Color3.fromRGB(23, 15, 51)
+	-- เปลี่ยนสีพื้นหลังของ Navigation เป็นโทนม่วงเข้ม
+	Navigation.BackgroundColor3 = Color3.fromRGB(23, 15, 51)
+	-- เปลี่ยนสีพื้นหลังของ Tabs เป็นโทนม่วงเข้ม
+	Tabs.BackgroundColor3 = Color3.fromRGB(23, 15, 51)
 
 	LoadingFrame.Frame.Frame.Title.Text = WindowSettings.LoadingTitle
 	LoadingFrame.Frame.Frame.Subtitle.Text = WindowSettings.LoadingSubtitle
@@ -6491,20 +6509,19 @@ Tab:CreateButton({
 			TweenService:Create(Title, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 
 			Tab:CreateSection("Custom Editor")
-
 			local c1cp = Tab:CreateColorPicker({
 				Name = "Color 1",
-				Color = Color3.fromRGB(117, 164, 206),
+				Color = Color3.fromRGB(75, 85, 200),
 			}, "LunaInterfaceSuitePrebuiltCPC1") -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 
 			local c2cp = Tab:CreateColorPicker({
 				Name = "Color 2",
-				Color = Color3.fromRGB(123, 201, 201),
+				Color = Color3.fromRGB(120, 95, 220),
 			}, "LunaInterfaceSuitePrebuiltCPC2")
 
 			local c3cp = Tab:CreateColorPicker({
 				Name = "Color 3",
-				Color = Color3.fromRGB(224, 138, 184),
+				Color = Color3.fromRGB(165, 105, 240),
 			}, "LunaInterfaceSuitePrebuiltCPC3") 
 
 			task.wait(1)

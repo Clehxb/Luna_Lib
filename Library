@@ -2118,7 +2118,7 @@ function Luna:Notification(data) -- action e.g open messages
 			newNotification.Icon.ImageRectOffset = iconResult.imageRectOffset
 		else
 			-- Handle string ContentId or nil
-			newNotification.Icon.Image = iconResult
+			newNotification.Icon.Image = iconResult or ""
 		end
 
 		-- Set initial transparency values

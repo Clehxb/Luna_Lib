@@ -3868,6 +3868,11 @@ function Luna:CreateWindow(WindowSettings)
 				end)
 
 
+				local function SyncCurrentOption()
+					-- ฟังก์ชันสำหรับ sync ค่า DropdownV.CurrentOption กับ DropdownSettings.CurrentOption
+					DropdownV.CurrentOption = DropdownSettings.CurrentOption
+				end
+
 				local function Clear()
 					for _, option in ipairs(Dropdown.List:GetChildren()) do
 						if option.ClassName == "TextLabel" and option.Name ~= "Template" then
@@ -3900,21 +3905,21 @@ function Luna:CreateWindow(WindowSettings)
 							if DropdownSettings.MultipleOptions then
 								if table.find(DropdownSettings.CurrentOption, v) then
 									RemoveTable(DropdownSettings.CurrentOption, v)
-									DropdownV.CurrentOption = DropdownSettings.CurrentOption
+									SyncCurrentOption()  -- Sync ค่า
 									if not optionhover then
 										tween(Option, {TextColor3 = Color3.fromRGB(200,200,200)})
 									end
 									tween(Option, {BackgroundTransparency = 0.98})
 								else
 									table.insert(DropdownSettings.CurrentOption, v)
-									DropdownV.CurrentOption = DropdownSettings.CurrentOption
+									SyncCurrentOption()  -- Sync ค่า
 									tween(Option, {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
 								end
 								bleh = DropdownSettings.CurrentOption
 							else
-								DropdownSettings.CurrentOption = {v}
+								DropdownSettings.CurrentOption = v  -- เก็บเป็น string สำหรับ single dropdown
 								bleh = v
-								DropdownV.CurrentOption = bleh
+								SyncCurrentOption()  -- Sync ค่า
 								ActivateColorSingle(v)
 							end
 
@@ -3934,7 +3939,7 @@ function Luna:CreateWindow(WindowSettings)
 									end
 								end
 								if not DropdownSettings.MultipleOptions then
-									Dropdown.Selected.PlaceholderText = DropdownSettings.CurrentOption[1] or "None"
+									Dropdown.Selected.PlaceholderText = DropdownSettings.CurrentOption or "None"
 								end
 								Dropdown.Selected.Text = ""
 							end)
@@ -3989,6 +3994,7 @@ function Luna:CreateWindow(WindowSettings)
 					end
 					PlayerTableRefresh()
 					DropdownSettings.CurrentOption = DropdownSettings.Options[1]
+					SyncCurrentOption()  -- Sync ค่า
 
 					Players.PlayerAdded:Connect(function() PlayerTableRefresh() end)
 					Players.PlayerRemoving:Connect(function() PlayerTableRefresh() end)
@@ -3999,20 +4005,40 @@ function Luna:CreateWindow(WindowSettings)
 
 				if DropdownSettings.CurrentOption then
 					if type(DropdownSettings.CurrentOption) == "string" then
-						DropdownSettings.CurrentOption = {DropdownSettings.CurrentOption}
-					end
-					if not DropdownSettings.MultipleOptions and type(DropdownSettings.CurrentOption) == "table" then
-						DropdownSettings.CurrentOption = {DropdownSettings.CurrentOption[1]}
+						if not DropdownSettings.MultipleOptions then
+							-- สำหรับ single dropdown เก็บเป็น string
+							SyncCurrentOption()
+						else
+							-- สำหรับ multiple dropdown แปลงเป็น table
+							DropdownSettings.CurrentOption = {DropdownSettings.CurrentOption}
+							SyncCurrentOption()
+						end
+					elseif type(DropdownSettings.CurrentOption) == "table" then
+						if not DropdownSettings.MultipleOptions then
+							-- สำหรับ single dropdown เอาแค่ตัวแรก
+							DropdownSettings.CurrentOption = DropdownSettings.CurrentOption[1] or ""
+							SyncCurrentOption()
+						else
+							-- สำหรับ multiple dropdown เก็บเป็น table
+							SyncCurrentOption()
+						end
 					end
 				else
-					DropdownSettings.CurrentOption = {}
+					if DropdownSettings.MultipleOptions then
+						DropdownSettings.CurrentOption = {}
+						SyncCurrentOption()
+					else
+						DropdownSettings.CurrentOption = ""
+						SyncCurrentOption()
+					end
 				end
 
-				local bleh, ind = nil,0
-				for i,v in pairs(DropdownSettings.CurrentOption) do
-					ind = ind + 1
+				local bleh
+				if DropdownSettings.MultipleOptions then
+					bleh = DropdownSettings.CurrentOption
+				else
+					bleh = DropdownSettings.CurrentOption
 				end
-				if ind == 1 then bleh = DropdownSettings.CurrentOption[1] else bleh = DropdownSettings.CurrentOption end
 				SafeCallback(bleh)
 				if type(bleh) == "string" then 
 					tween(Dropdown.List[bleh], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
@@ -4039,7 +4065,7 @@ function Luna:CreateWindow(WindowSettings)
 						tween(Dropdown.List[name], {TextColor3 = Color3.fromRGB(227,227,227), BackgroundTransparency = 0.95})
 					end
 				else
-					Dropdown.Selected.PlaceholderText = DropdownSettings.CurrentOption[1] or "None"
+					Dropdown.Selected.PlaceholderText = DropdownSettings.CurrentOption or "None"
 				end
 				Dropdown.Selected.Text = ""
 
@@ -4061,7 +4087,8 @@ function Luna:CreateWindow(WindowSettings)
 							table.remove(DropdownSettings.Options, i)
 						end
 						PlayerTableRefresh()
-						DropdownSettings.CurrentOption = DropdownSettings.Options[1]                    
+						DropdownSettings.CurrentOption = DropdownSettings.Options[1]
+						SyncCurrentOption()  -- Sync ค่า                    
 						Players.PlayerAdded:Connect(function() PlayerTableRefresh() end)
 						Players.PlayerRemoving:Connect(function() PlayerTableRefresh() end)
 
@@ -4071,27 +4098,53 @@ function Luna:CreateWindow(WindowSettings)
 
 					if DropdownSettings.CurrentOption then
 						if type(DropdownSettings.CurrentOption) == "string" then
-							DropdownSettings.CurrentOption = {DropdownSettings.CurrentOption}
-						end
-						if not DropdownSettings.MultipleOptions and type(DropdownSettings.CurrentOption) == "table" then
-							DropdownSettings.CurrentOption = {DropdownSettings.CurrentOption[1]}
+							if not DropdownSettings.MultipleOptions then
+								-- สำหรับ single dropdown เก็บเป็น string
+								SyncCurrentOption()
+							else
+								-- สำหรับ multiple dropdown แปลงเป็น table
+								DropdownSettings.CurrentOption = {DropdownSettings.CurrentOption}
+								SyncCurrentOption()
+							end
+						elseif type(DropdownSettings.CurrentOption) == "table" then
+							if not DropdownSettings.MultipleOptions then
+								-- สำหรับ single dropdown เอาแค่ตัวแรก
+								DropdownSettings.CurrentOption = DropdownSettings.CurrentOption[1] or ""
+								SyncCurrentOption()
+							else
+								-- สำหรับ multiple dropdown เก็บเป็น table
+								SyncCurrentOption()
+							end
 						end
 					else
-						DropdownSettings.CurrentOption = {}
+						if DropdownSettings.MultipleOptions then
+							DropdownSettings.CurrentOption = {}
+							SyncCurrentOption()
+						else
+							DropdownSettings.CurrentOption = ""
+							SyncCurrentOption()
+						end
 					end
 
-					local bleh, ind = nil,0
-					for i,v in pairs(DropdownSettings.CurrentOption) do
-						ind = ind + 1
+					local bleh
+					if DropdownSettings.MultipleOptions then
+						bleh = DropdownSettings.CurrentOption
+					else
+						bleh = DropdownSettings.CurrentOption
 					end
-					if ind == 1 then bleh = DropdownSettings.CurrentOption[1] else bleh = DropdownSettings.CurrentOption end
 					SafeCallback(bleh)
 					for _, Option in pairs(Dropdown.List:GetChildren()) do
 						if Option.ClassName == "TextLabel" then
 							tween(Option, {TextColor3 = Color3.fromRGB(200,200,200), BackgroundTransparency = 0.98})
 						end
 					end
-					tween(Dropdown.List[bleh], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
+					if type(bleh) == "string" and bleh ~= "" then
+						tween(Dropdown.List[bleh], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
+					elseif type(bleh) == "table" then
+						for i,v in pairs(bleh) do
+							tween(Dropdown.List[v], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
+						end
+					end
 
 					if DropdownSettings.MultipleOptions then
 						if DropdownSettings.CurrentOption and type(DropdownSettings.CurrentOption) == "table" then
@@ -4110,7 +4163,7 @@ function Luna:CreateWindow(WindowSettings)
 							tween(Dropdown.List[name], {TextColor3 = Color3.fromRGB(227,227,227), BackgroundTransparency = 0.95})
 						end
 					else
-						Dropdown.Selected.PlaceholderText = DropdownSettings.CurrentOption[1] or "None"
+						Dropdown.Selected.PlaceholderText = DropdownSettings.CurrentOption or "None"
 					end
 					Dropdown.Selected.Text = ""
 
@@ -6518,68 +6571,35 @@ Tab:CreateButton({
 			},
 			["Dropdown"] = {
 				Save = function(Flag, data)
-					local value = data.CurrentOption
-					
-					-- ตรวจสอบว่าค่าเป็นค่าว่างหรือไม่
-					local isEmptyValue = false
-					if not value then
-						isEmptyValue = true
-					elseif type(value) == "string" and (value == "" or value == "None") then
-						isEmptyValue = true
-					elseif type(value) == "table" then
-						if #value == 0 then
-							isEmptyValue = true
-						elseif #value == 1 and (value[1] == "" or value[1] == "None") then
-							isEmptyValue = true
-						end
-					end
-					
-					-- ถ้าค่าว่าง ลองใช้ค่า default จาก Settings
-					if isEmptyValue and data.Settings then
-						local defaultValue = data.Settings.CurrentOption
-						if defaultValue and not (
-							(type(defaultValue) == "string" and (defaultValue == "" or defaultValue == "None")) or
-							(type(defaultValue) == "table" and (#defaultValue == 0 or (defaultValue[1] == "" or defaultValue[1] == "None")))
-						) then
-							value = defaultValue
-						end
-					end
+					-- ใช้ค่าจาก Settings.CurrentOption ซึ่งเป็นค่าจริงที่ผู้ใช้เลือก
+					local value = data.Settings.CurrentOption
 					
 					return {
 						type = "Dropdown", 
 						flag = Flag, 
 						value = value,
-						isMultiple = (type(value) == "table")
+						isMultiple = (data.Settings and data.Settings.MultipleOptions) or false
 					}
 				end,
 				Load = function(Flag, data)
 					if Luna.Options[Flag] and data.value then
-						-- ตรวจสอบว่าค่าที่จะโหลดเป็นค่าว่างหรือไม่
-						local isEmptyValue = false
-						if type(data.value) == "string" and (data.value == "" or data.value == "None") then
-							isEmptyValue = true
-						elseif type(data.value) == "table" then
-							if #data.value == 0 then
-								isEmptyValue = true
-							elseif #data.value == 1 and (data.value[1] == "" or data.value[1] == "None") then
-								isEmptyValue = true
-							end
-						end
+						-- ตรวจสอบว่า dropdown นี้เป็น multiple หรือ single
+						local option = Luna.Options[Flag]
+						local isMultipleOption = (option.Settings and option.Settings.MultipleOptions) or false
 						
-						-- ถ้าไม่ใช่ค่าว่าง ถึงจะโหลด
-						if not isEmptyValue then
-							if data.isMultiple then
-								if type(data.value) == "table" then
-									Luna.Options[Flag]:Set({ CurrentOption = data.value })
-								else
-									Luna.Options[Flag]:Set({ CurrentOption = {data.value} })
-								end
+						if isMultipleOption then
+							-- MultipleOptions = true
+							if type(data.value) == "table" then
+								Luna.Options[Flag]:Set({ CurrentOption = data.value })
 							else
-								if type(data.value) == "table" then
-									Luna.Options[Flag]:Set({ CurrentOption = data.value[1] or "" })
-								else
-									Luna.Options[Flag]:Set({ CurrentOption = data.value })
-								end
+								Luna.Options[Flag]:Set({ CurrentOption = {data.value} })
+							end
+						else
+							-- MultipleOptions = false (single dropdown)
+							if type(data.value) == "table" and #data.value > 0 then
+								Luna.Options[Flag]:Set({ CurrentOption = data.value[1] })
+							elseif type(data.value) == "string" then
+								Luna.Options[Flag]:Set({ CurrentOption = data.value })
 							end
 						end
 					end

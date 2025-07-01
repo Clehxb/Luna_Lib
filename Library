@@ -47,7 +47,122 @@ end
 
 -- Credits To Latte Softworks And qweery for Lucide And Material Icons Respectively.
 local IconModule = {
-	Lucide = nil,
+	Lucide = {
+		-- Popular Lucide icons (you can add more as needed)
+		["star"] = "10723434557",
+		["star-half"] = "10723434851",
+		["heart"] = "10723434237",
+		["home"] = "10723434289",
+		["user"] = "10723434949",
+		["users"] = "10723434959",
+		["settings"] = "10723434901",
+		["search"] = "10723434831",
+		["menu"] = "10723434505",
+		["x"] = "10723434981",
+		["plus"] = "10723434755",
+		["minus"] = "10723434673",
+		["check"] = "10723434134",
+		["arrow-right"] = "10723433901",
+		["arrow-left"] = "10723433871",
+		["arrow-up"] = "10723433931",
+		["arrow-down"] = "10723433831",
+		["chevron-right"] = "10723434167",
+		["chevron-left"] = "10723434127",
+		["chevron-up"] = "10723434187",
+		["chevron-down"] = "10723434107",
+		["play"] = "10723434725",
+		["pause"] = "10723434705",
+		["stop"] = "10723434941",
+		["volume-2"] = "10723434969",
+		["volume-x"] = "10723434991",
+		["bell"] = "10723433991",
+		["mail"] = "10723434465",
+		["phone"] = "10723434715",
+		["camera"] = "10723434047",
+		["image"] = "10723434339",
+		["file"] = "10723434217",
+		["folder"] = "10723434267",
+		["download"] = "10723434197",
+		["upload"] = "10723434961",
+		["edit"] = "10723434207",
+		["trash"] = "10723434951",
+		["copy"] = "10723434177",
+		["share"] = "10723434881",
+		["link"] = "10723434385",
+		["external-link"] = "10723434227",
+		["eye"] = "10723434247",
+		["eye-off"] = "10723434257",
+		["lock"] = "10723434425",
+		["unlock"] = "10723434951",
+		["shield"] = "10723434891",
+		["info"] = "10723434349",
+		["alert-circle"] = "10723433811",
+		["alert-triangle"] = "10723433851",
+		["check-circle"] = "10723434147",
+		["x-circle"] = "10723434971",
+		["help-circle"] = "10723434279",
+		["sun"] = "10723434931",
+		["moon"] = "10723434535",
+		["zap"] = "10723435001",
+		["wifi"] = "10723434979",
+		["bluetooth"] = "10723434017",
+		["battery"] = "10723433981",
+		["cpu"] = "10723434187",
+		["monitor"] = "10723434515",
+		["smartphone"] = "10723434911",
+		["tablet"] = "10723434937",
+		["laptop"] = "10723434365",
+		["server"] = "10723434871",
+		["database"] = "10723434197",
+		["cloud"] = "10723434157",
+		["hard-drive"] = "10723434269",
+		["calendar"] = "10723434037",
+		["clock"] = "10723434157",
+		["map-pin"] = "10723434485",
+		["navigation"] = "10723434545",
+		["compass"] = "10723434167",
+		["globe"] = "10723434279",
+		["bookmark"] = "10723434007",
+		["tag"] = "10723434937",
+		["flag"] = "10723434257",
+		["gift"] = "10723434269",
+		["shopping-cart"] = "10723434901",
+		["credit-card"] = "10723434187",
+		["dollar-sign"] = "10723434197",
+		["trending-up"] = "10723434951",
+		["trending-down"] = "10723434951",
+		["bar-chart"] = "10723433971",
+		["pie-chart"] = "10723434715",
+		["activity"] = "10723433791",
+		["code"] = "10723434157",
+		["terminal"] = "10723434947",
+		["git-branch"] = "10723434269",
+		["package"] = "10723434685",
+		["layers"] = "10723434375",
+		["grid"] = "10723434279",
+		["layout"] = "10723434375",
+		["sidebar"] = "10723434891",
+		["maximize"] = "10723434495",
+		["minimize"] = "10723434505",
+		["move"] = "10723434525",
+		["rotate-ccw"] = "10723434821",
+		["rotate-cw"] = "10723434831",
+		["refresh-ccw"] = "10723434781",
+		["refresh-cw"] = "10723434791",
+		["undo"] = "10723434951",
+		["redo"] = "10723434781",
+		["save"] = "10723434821",
+		["filter"] = "10723434247",
+		["sort-asc"] = "10723434921",
+		["sort-desc"] = "10723434921",
+		["list"] = "10723434395",
+		["grid-3x3"] = "10723434279",
+		["table"] = "10723434937",
+		["columns"] = "10723434167",
+		["rows"] = "10723434821",
+		["more-horizontal"] = "10723434525",
+		["more-vertical"] = "10723434535"
+	},
 	Material = {
 		["perm_media"] = "http://www.roblox.com/asset/?id=6031215982";
 		["sticky_note_2"] = "http://www.roblox.com/asset/?id=6031265972";
@@ -1559,37 +1674,68 @@ local function GetIcon(icon, source)
 		return "rbxassetid://" .. icon
 	elseif source == "Lucide" then
 		-- full credit to latte softworks :)
-		local iconData = not isStudio and game:HttpGet("https://raw.githubusercontent.com/latte-soft/lucide-roblox/refs/heads/master/lib/Icons.luau")
-		local icons = isStudio and IconModule.Lucide or loadstring(iconData)()
-		if not isStudio then
-			icon = string.match(string.lower(icon), "^%s*(.*)%s*$") :: string
-			local sizedicons = icons['48px']
-
-			local r = sizedicons[icon]
-			if not r then
-				error("Lucide Icons: Failed to find icon by the name of \"" .. icon .. "\.", 2)
+		-- Always try to fetch from web first, fallback to local if failed
+		local success, iconData = pcall(function()
+			return game:HttpGet("https://raw.githubusercontent.com/latte-soft/lucide-roblox/refs/heads/master/lib/Icons.luau")
+		end)
+		
+		local icons
+		if success and iconData then
+			-- Successfully fetched from web
+			local loadSuccess, loadResult = pcall(loadstring, iconData)
+			if loadSuccess and loadResult then
+				local execSuccess, execResult = pcall(loadResult)
+				if execSuccess then
+					icons = execResult
+				end
 			end
-
-			local rirs = r[2]
-			local riro = r[3]
-
-			if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
-				error("Lucide Icons: Internal error: Invalid auto-generated asset entry")
-			end
-
-			local irs = Vector2.new(rirs[1], rirs[2])
-			local iro = Vector2.new(riro[1], riro[2])
-
-			local asset = {
-				id = r[1],
-				imageRectSize = irs,
-				imageRectOffset = iro,
-			}
-
-			return asset
-		else
-			return "rbxassetid://10723434557"
 		end
+		
+		-- If web fetch failed, use local icons as fallback
+		if not icons then
+			if IconModule.Lucide then
+				-- For local fallback, just return the asset ID
+				local localIcon = IconModule.Lucide[icon]
+				if localIcon then
+					return "rbxassetid://" .. localIcon
+				else
+					error("Lucide Icons: Failed to find icon by the name of \"" .. icon .. "\" in local fallback.", 2)
+				end
+			else
+				error("Lucide Icons: Failed to fetch from web and no local fallback available.", 2)
+			end
+		end
+		
+		-- Process web-fetched icons
+		icon = string.match(string.lower(icon), "^%s*(.*)%s*$")
+		local sizedicons = icons['48px']
+
+		local r = sizedicons[icon]
+		if not r then
+			-- Try local fallback if web doesn't have the icon
+			if IconModule.Lucide and IconModule.Lucide[icon] then
+				return "rbxassetid://" .. IconModule.Lucide[icon]
+			end
+			error("Lucide Icons: Failed to find icon by the name of \"" .. icon .. "\".", 2)
+		end
+
+		local rirs = r[2]
+		local riro = r[3]
+
+		if type(r[1]) ~= "number" or type(rirs) ~= "table" or type(riro) ~= "table" then
+			error("Lucide Icons: Internal error: Invalid auto-generated asset entry")
+		end
+
+		local irs = Vector2.new(rirs[1], rirs[2])
+		local iro = Vector2.new(riro[1], riro[2])
+
+		local asset = {
+			id = r[1],
+			imageRectSize = irs,
+			imageRectOffset = iro,
+		}
+
+		return asset
 	else	
 		if icon ~= nil and IconModule[source] then
 			local sourceicon = IconModule[source]
@@ -2706,7 +2852,18 @@ function Luna:CreateWindow(WindowSettings)
 		TabButton.Name = TabSettings.Name
 		TabButton.TextLabel.Text = TabSettings.Name
 		TabButton.Parent = Navigation.Tabs
-		TabButton.ImageLabel.Image = GetIcon(TabSettings.Icon, TabSettings.ImageSource)
+		
+		-- Handle icon assignment properly
+		local iconResult = GetIcon(TabSettings.Icon, TabSettings.ImageSource)
+		if type(iconResult) == "table" then
+			-- Handle Lucide icon asset table
+			TabButton.ImageLabel.Image = "rbxassetid://" .. iconResult.id
+			TabButton.ImageLabel.ImageRectSize = iconResult.imageRectSize
+			TabButton.ImageLabel.ImageRectOffset = iconResult.imageRectOffset
+		else
+			-- Handle string ContentId or nil
+			TabButton.ImageLabel.Image = iconResult or ""
+		end
 
 		TabButton.Visible = true
 

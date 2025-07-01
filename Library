@@ -6302,6 +6302,56 @@ Tab:CreateButton({
 })
 
 Tab:CreateButton({
+	Name = "Override Config",
+	Description = "เขียนทับคอนฟิคที่เลือกด้วยการตั้งค่าปัจจุบัน",
+	Callback = function()
+		local name = GetSelectedConfigName()
+		if name == "" then 
+			Luna:Notification({
+				Title = "Interface",
+				Icon = "_warning",
+				ImageSource = "Material",
+				Content = "Please select a config first."
+			})
+			return
+		end
+
+		local success, err = pcall(function()
+			-- ใช้ระบบ SaveConfig เดียวกับปุ่ม Create Config
+			local saved, returned = Luna:SaveConfig(name)
+			if not saved then
+				Luna:Notification({
+					Title = "Interface",
+					Icon = "error",
+					ImageSource = "Material",
+					Content = "Unable to override config, return error: " .. tostring(returned)
+				})
+				return
+			end
+
+			Luna:Notification({
+				Title = "Interface",
+				Icon = "info",
+				ImageSource = "Material",
+				Content = string.format("Successfully overridden config %q with current settings", name),
+			})
+
+			-- รีเฟรชรายการ config
+			configSelection:Set({ Options = Luna:RefreshConfigList() })
+		end)
+
+		if not success then
+			Luna:Notification({
+				Title = "Interface",
+				Icon = "error",
+				ImageSource = "Material",
+				Content = "Failed to override config: " .. tostring(err)
+			})
+		end
+	end
+})
+
+Tab:CreateButton({
     Name = "Delete Config",
     Description = "ลบคอนฟิคที่เลือก",
     Callback = function()
@@ -6468,15 +6518,70 @@ Tab:CreateButton({
 			},
 			["Dropdown"] = {
 				Save = function(Flag, data)
+					local value = data.CurrentOption
+					
+					-- ตรวจสอบว่าค่าเป็นค่าว่างหรือไม่
+					local isEmptyValue = false
+					if not value then
+						isEmptyValue = true
+					elseif type(value) == "string" and (value == "" or value == "None") then
+						isEmptyValue = true
+					elseif type(value) == "table" then
+						if #value == 0 then
+							isEmptyValue = true
+						elseif #value == 1 and (value[1] == "" or value[1] == "None") then
+							isEmptyValue = true
+						end
+					end
+					
+					-- ถ้าค่าว่าง ลองใช้ค่า default จาก Settings
+					if isEmptyValue and data.Settings then
+						local defaultValue = data.Settings.CurrentOption
+						if defaultValue and not (
+							(type(defaultValue) == "string" and (defaultValue == "" or defaultValue == "None")) or
+							(type(defaultValue) == "table" and (#defaultValue == 0 or (defaultValue[1] == "" or defaultValue[1] == "None")))
+						) then
+							value = defaultValue
+						end
+					end
+					
 					return {
 						type = "Dropdown", 
 						flag = Flag, 
-						value = data.CurrentOption
+						value = value,
+						isMultiple = (type(value) == "table")
 					}
 				end,
 				Load = function(Flag, data)
 					if Luna.Options[Flag] and data.value then
-						Luna.Options[Flag]:Set({ CurrentOption = data.value })
+						-- ตรวจสอบว่าค่าที่จะโหลดเป็นค่าว่างหรือไม่
+						local isEmptyValue = false
+						if type(data.value) == "string" and (data.value == "" or data.value == "None") then
+							isEmptyValue = true
+						elseif type(data.value) == "table" then
+							if #data.value == 0 then
+								isEmptyValue = true
+							elseif #data.value == 1 and (data.value[1] == "" or data.value[1] == "None") then
+								isEmptyValue = true
+							end
+						end
+						
+						-- ถ้าไม่ใช่ค่าว่าง ถึงจะโหลด
+						if not isEmptyValue then
+							if data.isMultiple then
+								if type(data.value) == "table" then
+									Luna.Options[Flag]:Set({ CurrentOption = data.value })
+								else
+									Luna.Options[Flag]:Set({ CurrentOption = {data.value} })
+								end
+							else
+								if type(data.value) == "table" then
+									Luna.Options[Flag]:Set({ CurrentOption = data.value[1] or "" })
+								else
+									Luna.Options[Flag]:Set({ CurrentOption = data.value })
+								end
+							end
+						end
 					end
 				end
 			},
